@@ -1,0 +1,86 @@
+#define enA 5 // Enable1 L293 Pin enA
+#define in1 6 // Motor1  L293 Pin in1
+#define in2 7 // Motor1  L293 Pin in1
+#define in3 9 // Motor2  L293 Pin in1
+#define in4 10 // Motor2  L293 Pin in1
+#define enB 8 // Enable2 L293 Pin enB
+#define R_S 4 // ir sensor Right
+#define L_S 2 // ir sensor Left
+#define MANUAL_SWITCH 3 // Digital pin for the manual control switch
+
+bool manualControl = false; // Variable to control manual movement
+
+void setup() {
+  pinMode(R_S, INPUT);
+  pinMode(L_S, INPUT);
+  pinMode(enA, OUTPUT);
+  pinMode(in1, OUTPUT);
+  pinMode(in2, OUTPUT);
+  pinMode(in3, OUTPUT);
+  pinMode(in4, OUTPUT);
+  pinMode(enB, OUTPUT);
+  pinMode(MANUAL_SWITCH, INPUT_PULLUP); // Set up the switch pin with internal pull-up resistor
+  digitalWrite(enA, HIGH);
+  digitalWrite(enB, HIGH);
+  delay(1000);
+}
+
+void loop() {
+  if (manualControl) {
+    manualMovement();
+  } else {
+    if ((digitalRead(R_S) == 0) && (digitalRead(L_S) == 0)) {
+      forward();
+    } else if ((digitalRead(R_S) == 1) && (digitalRead(L_S) == 0)) {
+      turnRight();
+    } else if ((digitalRead(R_S) == 0) && (digitalRead(L_S) == 1)) {
+      turnLeft();
+    } else if ((digitalRead(R_S) == 1) && (digitalRead(L_S) == 1)) {
+      Stop();
+      delay(600000); // Wait for 10 minutes (600,000 milliseconds)
+      manualControl = true; // Enable manual control
+    } else {
+      Stop();
+    }
+  }
+}
+
+void forward() {
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+}
+
+void turnRight() {
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+}
+
+void turnLeft() {
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+}
+
+void Stop() {
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, LOW);
+}
+
+void manualMovement() {
+  // Check if the manual control switch is pressed
+  if (digitalRead(MANUAL_SWITCH) == LOW) {
+    // Implement your manual control logic here
+    // For example, use switch states to control the robot's movement
+  } else {
+    // If the switch is released, exit manual control mode
+    manualControl = false;
+  }
+}
+
